@@ -9,63 +9,93 @@ export default function RegisterPage() {
 
   const navigate = useNavigate()
 
-  const [name,     setName]     = useState("")
-  const [email,    setEmail]    = useState("")
+  const [name, setName] = useState("")
+  const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  const [loading,  setLoading]  = useState(false)
+  const [loading, setLoading] = useState(false)
 
   const handleRegister = async (e) => {
+
     e.preventDefault()
+
+    if (loading) return
+
     setLoading(true)
 
     try {
 
-      const hashedPassword = CryptoJS.SHA256(password).toString()
+      const trimmedName = name.trim()
 
-      console.log("📝 Register:", { name, email: email.trim().toLowerCase() })
+      const trimmedEmail = email
+        .trim()
+        .toLowerCase()
 
-      const body = JSON.stringify({
-        action:   "register",
-        name:     name.trim(),
-        email:    email.trim().toLowerCase(),
-        password: hashedPassword,
+      // HASH PASSWORD
+      const hashedPassword = CryptoJS
+        .SHA256(password)
+        .toString()
+
+      console.log("📝 Register Data:", {
+        name: trimmedName,
+        email: trimmedEmail,
       })
+
+      // PENTING:
+      // jangan pakai headers Content-Type
+      // agar tidak kena CORS preflight
 
       const response = await fetch(API_URL, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body,
+        body: JSON.stringify({
+          action: "register",
+          name: trimmedName,
+          email: trimmedEmail,
+          password: hashedPassword,
+        }),
       })
 
       const result = await response.json()
 
-      console.log("📦 Response:", result)
+      console.log("📦 Register Response:", result)
 
       if (!result.success) {
-        alert("❌ " + (result.message || "Register gagal"))
-        setLoading(false)
+
+        alert(result.message || "Register gagal")
+
         return
       }
 
-      alert("✅ " + result.message)
+      alert("✅ Register berhasil!")
+
       navigate("/login")
 
     } catch (error) {
+
       console.error("❌ Register Error:", error)
+
       alert("Register gagal: " + error.message)
+
+    } finally {
+
       setLoading(false)
+
     }
   }
 
   return (
+
     <div className="min-h-screen bg-[#0F1117] flex items-center justify-center px-6">
+
       <div className="w-full max-w-md bg-[#1A1D27] border border-[#2D3148] rounded-3xl p-8">
 
         <h1 className="text-4xl font-bold text-white text-center mb-8">
           Register
         </h1>
 
-        <form onSubmit={handleRegister} className="space-y-5">
+        <form
+          onSubmit={handleRegister}
+          className="space-y-5"
+        >
 
           <input
             type="text"
@@ -100,7 +130,7 @@ export default function RegisterPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-500 hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed py-3 rounded-xl font-medium transition"
+            className="w-full bg-blue-500 hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed py-3 rounded-xl font-medium transition text-white"
           >
             {loading ? "Loading..." : "Register"}
           </button>
@@ -108,13 +138,20 @@ export default function RegisterPage() {
         </form>
 
         <p className="text-center text-slate-400 mt-5">
+
           Sudah punya akun?{" "}
-          <Link to="/login" className="text-blue-400 hover:text-blue-300 transition">
+
+          <Link
+            to="/login"
+            className="text-blue-400 hover:text-blue-300 transition"
+          >
             Login
           </Link>
+
         </p>
 
       </div>
+
     </div>
   )
 }
