@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 
 import {
@@ -78,7 +78,7 @@ export default function DashboardPage() {
   // =========================
   // FETCH DATA
   // =========================
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
 
     try {
 
@@ -123,7 +123,7 @@ export default function DashboardPage() {
 
       setApplications([])
     }
-  }
+  }, [user])
 
   // =========================
   // FIRST LOAD
@@ -137,16 +137,20 @@ export default function DashboardPage() {
       return
     }
 
-    fetchData()
+    const loadDashboard = async () => {
+      await fetchData()
 
-    const currentUserId =
-      user.user_id ||
-      user.id ||
-      user.email
+      const currentUserId =
+        user.user_id ||
+        user.id ||
+        user.email
 
-    autoReject(currentUserId)
+      await autoReject(currentUserId)
+    }
 
-  }, [])
+    loadDashboard()
+
+  }, [fetchData, navigate, user])
 
   // =========================
   // LOGOUT
@@ -263,14 +267,14 @@ export default function DashboardPage() {
         tanggal_apply:
           form.tanggal_apply || "",
 
-        link_job:
-          form.link_job || "",
+        link_apply:
+          form.link_apply || "",
 
         status:
           form.status || "Melamar",
 
-        notes:
-          form.notes || "",
+        catatan:
+          form.catatan || "",
       }
 
       console.log("PAYLOAD ADD:", payload)
@@ -284,7 +288,7 @@ export default function DashboardPage() {
         setShowModal(false)
 
         setToast(
-          "Lamaran berhasil ditambahkan 🚀"
+          "Lamaran berhasil ditambahkan"
         )
 
         // REFRESH DATA
@@ -394,7 +398,7 @@ export default function DashboardPage() {
         <div className="bg-[#1A1D27] border border-[#2D3148] rounded-3xl p-4 md:p-8">
 
           <h2 className="text-3xl font-bold mb-3">
-            Welcome 👋
+            Welcome
           </h2>
 
           <p className="text-slate-400">

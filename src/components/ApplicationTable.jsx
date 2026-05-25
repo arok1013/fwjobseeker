@@ -22,7 +22,7 @@ export default function ApplicationTable({
         minute: "2-digit",
       }) + " WIB"
 
-    } catch (error) {
+    } catch {
 
       return dateString
     }

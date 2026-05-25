@@ -2,44 +2,58 @@ import { useState } from "react"
 import { useNavigate, Link } from "react-router-dom"
 import CryptoJS from "crypto-js"
 
+const API_URL =
+  "https://script.google.com/macros/s/AKfycbzh8uFUijj97C8gnLnW82NoxcnpQ4_CtFuC2j9J3JaRCz1B9F-1-pgppV1IDSUFwSqj/exec"
+
 export default function RegisterPage() {
 
   const navigate = useNavigate()
 
-  const [name, setName] = useState("")
-  const [email, setEmail] = useState("")
+  const [name,     setName]     = useState("")
+  const [email,    setEmail]    = useState("")
   const [password, setPassword] = useState("")
+  const [loading,  setLoading]  = useState(false)
 
   const handleRegister = async (e) => {
     e.preventDefault()
+    setLoading(true)
 
     try {
 
       const hashedPassword = CryptoJS.SHA256(password).toString()
 
-      const response = await fetch(
-        "https://script.google.com/macros/s/AKfycbzh8uFUijj97C8gnLnW82NoxcnpQ4_CtFuC2j9J3JaRCz1B9F-1-pgppV1IDSUFwSqj/exec",
-        {
-          method: "POST",
-          body: JSON.stringify({
-            name,
-            email,
-            password: hashedPassword,
-          }),
-        }
-      )
+      console.log("📝 Register:", { name, email: email.trim().toLowerCase() })
+
+      const body = JSON.stringify({
+        action:   "register",
+        name:     name.trim(),
+        email:    email.trim().toLowerCase(),
+        password: hashedPassword,
+      })
+
+      const response = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body,
+      })
 
       const result = await response.json()
 
-      alert(result.message)
+      console.log("📦 Response:", result)
 
-      if (result.success) {
-        navigate("/login")
+      if (!result.success) {
+        alert("❌ " + (result.message || "Register gagal"))
+        setLoading(false)
+        return
       }
 
+      alert("✅ " + result.message)
+      navigate("/login")
+
     } catch (error) {
-      console.log(error)
-      alert("Register gagal")
+      console.error("❌ Register Error:", error)
+      alert("Register gagal: " + error.message)
+      setLoading(false)
     }
   }
 
@@ -51,17 +65,16 @@ export default function RegisterPage() {
           Register
         </h1>
 
-        <form
-          onSubmit={handleRegister}
-          className="space-y-5"
-        >
+        <form onSubmit={handleRegister} className="space-y-5">
 
           <input
             type="text"
-            placeholder="Nama"
+            placeholder="Nama Lengkap"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full bg-[#22263A] border border-[#2D3148] rounded-xl px-4 py-3 text-white"
+            className="w-full bg-[#22263A] border border-[#2D3148] rounded-xl px-4 py-3 text-white outline-none focus:border-blue-500 transition"
+            disabled={loading}
+            required
           />
 
           <input
@@ -69,7 +82,9 @@ export default function RegisterPage() {
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full bg-[#22263A] border border-[#2D3148] rounded-xl px-4 py-3 text-white"
+            className="w-full bg-[#22263A] border border-[#2D3148] rounded-xl px-4 py-3 text-white outline-none focus:border-blue-500 transition"
+            disabled={loading}
+            required
           />
 
           <input
@@ -77,24 +92,24 @@ export default function RegisterPage() {
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full bg-[#22263A] border border-[#2D3148] rounded-xl px-4 py-3 text-white"
+            className="w-full bg-[#22263A] border border-[#2D3148] rounded-xl px-4 py-3 text-white outline-none focus:border-blue-500 transition"
+            disabled={loading}
+            required
           />
 
           <button
-            className="w-full bg-blue-500 hover:bg-blue-600 py-3 rounded-xl"
+            type="submit"
+            disabled={loading}
+            className="w-full bg-blue-500 hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed py-3 rounded-xl font-medium transition"
           >
-            Register
+            {loading ? "Loading..." : "Register"}
           </button>
 
         </form>
 
         <p className="text-center text-slate-400 mt-5">
           Sudah punya akun?{" "}
-
-          <Link
-            to="/login"
-            className="text-blue-400"
-          >
+          <Link to="/login" className="text-blue-400 hover:text-blue-300 transition">
             Login
           </Link>
         </p>

@@ -260,7 +260,7 @@ export default function ApplyJobModal({
             />
 
             <p className="text-xs text-slate-500 mt-2">
-              Opsional — bisa diisi link lowongan kerja
+              Opsional - bisa diisi link lowongan kerja
             </p>
 
           </div>
