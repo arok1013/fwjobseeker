@@ -10,32 +10,39 @@ export default function LoginPage() {
 
   const navigate = useNavigate()
 
-  const [email,    setEmail]    = useState("")
+  const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  const [loading,  setLoading]  = useState(false)
+  const [loading, setLoading] = useState(false)
 
   const handleLogin = async (e) => {
+
     e.preventDefault()
+
+    if (loading) return
+
     setLoading(true)
 
     try {
 
-      const emailTrimmed    = email.trim().toLowerCase()
-      const hashedPassword  = CryptoJS.SHA256(password).toString()
+      const emailTrimmed = email.trim().toLowerCase()
+
+      // HASH PASSWORD
+      const hashedPassword = CryptoJS.SHA256(password).toString()
 
       console.log("🔐 Email:", emailTrimmed)
       console.log("🔐 Hashed Password:", hashedPassword)
 
-      const body = JSON.stringify({
-        action:   "login",
-        email:    emailTrimmed,
-        password: hashedPassword,
-      })
+      // PENTING:
+      // jangan pakai Content-Type
+      // agar tidak kena CORS preflight
 
       const response = await fetch(API_URL, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body,
+        body: JSON.stringify({
+          action: "login",
+          email: emailTrimmed,
+          password: hashedPassword,
+        }),
       })
 
       const result = await response.json()
@@ -43,24 +50,37 @@ export default function LoginPage() {
       console.log("📦 Response:", result)
 
       if (!result.success) {
-        alert("❌ " + (result.message || "Email atau password salah"))
+
+        alert(result.message || "Email atau password salah")
+
         setLoading(false)
         return
       }
 
       console.log("✅ Login berhasil:", result.user)
+
+      // SAVE SESSION
       saveUserSession(result.user)
+
+      // REDIRECT
       navigate("/dashboard")
 
     } catch (error) {
+
       console.error("❌ Login Error:", error)
+
       alert("Login gagal: " + error.message)
+
+    } finally {
+
       setLoading(false)
+
     }
   }
 
   return (
     <div className="min-h-screen bg-[#0F1117] flex items-center justify-center px-6">
+
       <div className="w-full max-w-md bg-[#1A1D27] border border-[#2D3148] rounded-3xl p-8">
 
         <h1 className="text-4xl font-bold text-white text-center mb-8">
@@ -92,7 +112,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-500 hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed py-3 rounded-xl font-medium transition"
+            className="w-full bg-blue-500 hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed py-3 rounded-xl font-medium transition text-white"
           >
             {loading ? "Loading..." : "Login"}
           </button>
@@ -101,12 +121,16 @@ export default function LoginPage() {
 
         <p className="text-center text-slate-400 mt-5">
           Belum punya akun?{" "}
-          <Link to="/register" className="text-blue-400 hover:text-blue-300 transition">
+          <Link
+            to="/register"
+            className="text-blue-400 hover:text-blue-300 transition"
+          >
             Register
           </Link>
         </p>
 
       </div>
+
     </div>
   )
 }
