@@ -1,204 +1,140 @@
-import { useCallback, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
+
+import ApplyJobModal from "../components/ApplyJobModal"
+import ApplicationTable from "../components/ApplicationTable"
+import Toast from "../components/Toast"
 
 import {
   getUserSession,
-  logoutSession,
+  logout,
 } from "../utils/auth"
 
 import {
-  getApplications,
-  deleteApplication,
-  updateStatus,
-  autoReject,
   addApplication,
+  deleteApplication,
+  getApplications,
+  updateStatus,
 } from "../utils/api"
-
-import ApplicationTable from "../components/ApplicationTable"
-import ApplyJobModal from "../components/ApplyJobModal"
-import Toast from "../components/Toast"
 
 export default function DashboardPage() {
 
   const navigate = useNavigate()
 
-  // =========================
-  // USER SESSION
-  // =========================
-  const user = getUserSession()
+  const [user, setUser] = useState(null)
 
-  console.log("USER SESSION:", user)
-
-  // =========================
-  // STATES
-  // =========================
   const [applications, setApplications] = useState([])
 
-  const [time, setTime] = useState("")
+  const [loading, setLoading] = useState(true)
 
   const [showModal, setShowModal] = useState(false)
 
-  const [search, setSearch] = useState("")
-
-  const [filter, setFilter] = useState("Semua")
-
   const [toast, setToast] = useState("")
 
-  // =========================
-  // REALTIME CLOCK
-  // =========================
+  // LOAD USER
   useEffect(() => {
 
-    const updateClock = () => {
+    const currentUser = getUserSession()
 
-      const now = new Date()
-
-      const formatted = now.toLocaleString("id-ID", {
-        timeZone: "Asia/Jakarta",
-        weekday: "long",
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-      })
-
-      setTime(formatted + " WIB")
-    }
-
-    updateClock()
-
-    const interval = setInterval(updateClock, 1000)
-
-    return () => clearInterval(interval)
-
-  }, [])
-
-  // =========================
-  // FETCH DATA
-  // =========================
-  const fetchData = useCallback(async () => {
-
-    try {
-
-      if (!user) {
-        console.log("USER TIDAK ADA")
-        return
-      }
-
-      // AMBIL USER ID DARI SESSION
-      const currentUserId =
-        user.user_id ||
-        user.id ||
-        user.email
-
-      console.log("CURRENT USER ID:", currentUserId)
-
-      if (!currentUserId) {
-        console.log("USER ID TIDAK DITEMUKAN")
-        return
-      }
-
-      // GET DATA DARI API
-      const res = await getApplications(currentUserId)
-
-      console.log("GET APPLICATION RESPONSE:", res)
-
-      if (res.success) {
-
-        console.log("APPLICATION DATA:", res.data)
-
-        setApplications(res.data || [])
-
-      } else {
-
-        console.log("GAGAL GET DATA")
-        setApplications([])
-      }
-
-    } catch (error) {
-
-      console.log("FETCH DATA ERROR:", error)
-
-      setApplications([])
-    }
-  }, [user])
-
-  // =========================
-  // FIRST LOAD
-  // =========================
-  useEffect(() => {
-
-    if (!user) {
-
+    if (!currentUser) {
       navigate("/login")
-
       return
     }
 
-    const loadDashboard = async () => {
-      await fetchData()
+    setUser(currentUser)
 
-      const currentUserId =
-        user.user_id ||
-        user.id ||
-        user.email
+    loadApplications(currentUser.user_id)
 
-      await autoReject(currentUserId)
-    }
+  }, [])
 
-    loadDashboard()
-
-  }, [fetchData, navigate, user])
-
-  // =========================
-  // LOGOUT
-  // =========================
-  const handleLogout = () => {
-
-    logoutSession()
-
-    navigate("/login")
-  }
-
-  // =========================
-  // DELETE APPLICATION
-  // =========================
-  const handleDelete = async (app_id) => {
+  // LOAD DATA
+  const loadApplications = async (userId) => {
 
     try {
 
-      const res = await deleteApplication(app_id)
+      setLoading(true)
 
-      console.log("DELETE RESPONSE:", res)
+      const result = await getApplications(userId)
 
-      if (res.success) {
-
-        setToast("Lamaran berhasil dihapus")
-
-        fetchData()
-
-      } else {
-
-        setToast("Gagal menghapus data")
+      if (result.success) {
+        setApplications(result.data || [])
       }
-
-      setTimeout(() => {
-        setToast("")
-      }, 3000)
 
     } catch (error) {
 
-      console.log("DELETE ERROR:", error)
+      console.log(error)
 
-      setToast("Terjadi error saat delete")
+    } finally {
+
+      setLoading(false)
     }
   }
 
-  // =========================
+  // TOAST
+  const showToast = (message) => {
+
+    setToast(message)
+
+    setTimeout(() => {
+      setToast("")
+    }, 2500)
+  }
+
+  // ADD APPLICATION
+  const handleAddApplication = async (payload) => {
+
+    try {
+
+      const app = {
+        ...payload,
+        app_id: "APP-" + Date.now(),
+        user_id: user.user_id,
+        status: "Melamar",
+      }
+
+      const result = await addApplication(app)
+
+      if (!result.success) {
+        alert(result.message)
+        return
+      }
+
+      await loadApplications(user.user_id)
+
+      setShowModal(false)
+
+      showToast("Lamaran berhasil ditambahkan ✨")
+
+    } catch (error) {
+
+      console.log(error)
+    }
+  }
+
+  // DELETE
+  const handleDelete = async (app_id) => {
+
+    const confirmDelete = confirm(
+      "Yakin ingin menghapus lamaran ini?"
+    )
+
+    if (!confirmDelete) return
+
+    try {
+
+      await deleteApplication(app_id)
+
+      await loadApplications(user.user_id)
+
+      showToast("Lamaran berhasil dihapus 🗑️")
+
+    } catch (error) {
+
+      console.log(error)
+    }
+  }
+
   // UPDATE STATUS
-  // =========================
   const handleUpdateStatus = async (
     app_id,
     status
@@ -206,265 +142,217 @@ export default function DashboardPage() {
 
     try {
 
-      const res = await updateStatus(
-        app_id,
-        status
-      )
+      await updateStatus(app_id, status)
 
-      console.log("UPDATE STATUS:", res)
+      await loadApplications(user.user_id)
 
-      if (res.success) {
-
-        setToast(
-          `Status berhasil diubah menjadi ${status}`
-        )
-
-        fetchData()
-
-      } else {
-
-        setToast("Gagal update status")
-      }
-
-      setTimeout(() => {
-        setToast("")
-      }, 3000)
+      showToast("Status berhasil diupdate 🚀")
 
     } catch (error) {
 
       console.log(error)
-
-      setToast("Terjadi error update status")
     }
   }
 
-  // =========================
-  // ADD JOB
-  // =========================
-  const handleAddJob = async (form) => {
+  // LOGOUT
+  const handleLogout = () => {
 
-    try {
+    logout()
 
-      // USER ID WAJIB SAMA DENGAN SESSION
-      const currentUserId =
-        user.user_id ||
-        user.id ||
-        user.email
-
-      const payload = {
-
-        app_id: "app_" + Date.now(),
-
-        user_id: currentUserId,
-
-        nama_pt: form.nama_pt || "",
-
-        posisi: form.posisi || "",
-
-        job_deskripsi:
-          form.job_deskripsi || "",
-
-        tanggal_apply:
-          form.tanggal_apply || "",
-
-        link_apply:
-          form.link_apply || "",
-
-        status:
-          form.status || "Melamar",
-
-        catatan:
-          form.catatan || "",
-      }
-
-      console.log("PAYLOAD ADD:", payload)
-
-      const res = await addApplication(payload)
-
-      console.log("ADD APPLICATION RESPONSE:", res)
-
-      if (res.success) {
-
-        setShowModal(false)
-
-        setToast(
-          "Lamaran berhasil ditambahkan"
-        )
-
-        // REFRESH DATA
-        await fetchData()
-
-      } else {
-
-        setToast("Gagal menambahkan lamaran")
-      }
-
-      setTimeout(() => {
-        setToast("")
-      }, 3000)
-
-    } catch (error) {
-
-      console.log("ADD JOB ERROR:", error)
-
-      setToast("Terjadi error saat submit")
-    }
+    navigate("/login")
   }
 
-  // =========================
-  // FILTER DATA
-  // =========================
-  const filteredApplications =
-    applications.filter((item) => {
+  // STATS
+  const totalApply = applications.length
 
-      const company =
-        item.nama_pt?.toLowerCase() || ""
-
-      const position =
-        item.posisi?.toLowerCase() || ""
-
-      const matchSearch =
-        company.includes(
-          search.toLowerCase()
-        ) ||
-        position.includes(
-          search.toLowerCase()
-        )
-
-      const matchFilter =
-        filter === "Semua"
-          ? true
-          : item.status === filter
-
-      return matchSearch && matchFilter
-    })
-
-  // =========================
-  // SUMMARY
-  // =========================
-  const total = applications.length
-
-  const processCount =
+  const totalInterview =
     applications.filter(
-      (a) =>
-        a.status === "Melamar" ||
-        a.status === "Interview"
+      (item) => item.status === "Interview"
     ).length
 
-  const accepted =
+  const totalAccepted =
     applications.filter(
-      (a) => a.status === "Diterima"
+      (item) => item.status === "Diterima"
     ).length
 
-  const rejected =
+  const totalRejected =
     applications.filter(
-      (a) =>
-        a.status === "Ditolak" ||
-        a.status === "Ditolak (Auto)"
+      (item) =>
+        item.status?.includes("Ditolak")
     ).length
 
   return (
 
-    <div className="min-h-screen bg-[#0F1117] text-white">
+    <div className="min-h-screen relative overflow-hidden px-6 py-8">
 
-      {/* NAVBAR */}
-      <div className="border-b border-[#2D3148] px-4 md:px-8 py-5 flex items-center justify-between">
+      {/* BACKGROUND */}
+      <div className="absolute top-0 left-0 w-96 h-96 bg-pink-500/20 blur-3xl rounded-full"></div>
 
-        <div>
-
-          <h1 className="text-2xl font-bold">
-            FW JOBSEEKER
-          </h1>
-
-          <p className="text-slate-400 text-sm mt-1">
-            {time}
-          </p>
-
-        </div>
-
-        <button
-          onClick={handleLogout}
-          className="bg-red-500 hover:bg-red-600 px-5 py-2 rounded-xl transition"
-        >
-          Logout
-        </button>
-
-      </div>
+      <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-500/20 blur-3xl rounded-full"></div>
 
       {/* CONTENT */}
-      <div className="p-4 md:p-8 space-y-6">
+      <div className="relative z-10 max-w-7xl mx-auto">
 
-        {/* USER CARD */}
-        <div className="bg-[#1A1D27] border border-[#2D3148] rounded-3xl p-4 md:p-8">
+        {/* HEADER */}
+        <div
+          className="
+            glass
+            rounded-[32px]
+            p-6
+            flex flex-col lg:flex-row
+            lg:items-center
+            justify-between
+            gap-6
+            mb-8
+          "
+        >
 
-          <h2 className="text-3xl font-bold mb-3">
-            Welcome
-          </h2>
+          <div>
 
-          <p className="text-slate-400">
-            {user?.name}
-          </p>
+            <div
+              className="
+                inline-flex
+                items-center
+                gap-3
+                mb-4
+              "
+            >
 
-          <p className="text-slate-500 mt-2">
-  {user?.email}
-</p>
+              <div
+                className="
+                  w-14 h-14
+                  rounded-2xl
+                  bg-gradient-to-br
+                  from-pink-500
+                  to-purple-600
+                  flex items-center justify-center
+                  text-2xl
+                  shadow-lg
+                  shadow-pink-500/30
+                "
+              >
+                💼
+              </div>
 
-<p className="text-slate-500 mt-2">
-  ID Akun : {
-    user?.user_id ||
-    user?.id
-  }
-</p>
+              <div>
+
+                <h1 className="text-3xl font-black text-white">
+                  FWJobSeeker
+                </h1>
+
+                <p className="text-slate-400">
+                  Track your job journey 🚀
+                </p>
+
+              </div>
+
+            </div>
+
+            <p className="text-slate-300">
+              Welcome back,{" "}
+              <span className="font-bold text-pink-300">
+                {user?.name}
+              </span>
+            </p>
+
+          </div>
+
+          {/* ACTIONS */}
+          <div className="flex flex-wrap gap-4">
+
+            <button
+              onClick={() => setShowModal(true)}
+              className="
+                bg-gradient-to-r
+                from-pink-500
+                via-purple-500
+                to-indigo-500
+                hover:scale-[1.02]
+                active:scale-[0.98]
+                transition-all
+                px-6 py-4
+                rounded-2xl
+                font-semibold
+                shadow-lg
+                shadow-pink-500/30
+              "
+            >
+              ✨ Add Application
+            </button>
+
+            <button
+              onClick={handleLogout}
+              className="
+                bg-white/10
+                hover:bg-red-500
+                transition
+                px-6 py-4
+                rounded-2xl
+              "
+            >
+              Logout
+            </button>
+
+          </div>
 
         </div>
 
-        {/* SUMMARY */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        {/* STATS */}
+        <div
+          className="
+            grid
+            grid-cols-1
+            sm:grid-cols-2
+            xl:grid-cols-4
+            gap-5
+            mb-8
+          "
+        >
 
-          <div className="bg-[#1A1D27] p-6 rounded-2xl border border-[#2D3148]">
+          <div className="glass rounded-3xl p-6">
 
-            <p className="text-slate-400">
-              Total Lamaran
+            <p className="text-slate-400 mb-3">
+              Total Apply
             </p>
 
-            <h2 className="text-3xl font-bold mt-2">
-              {total}
+            <h2 className="text-4xl font-black">
+              {totalApply}
             </h2>
 
           </div>
 
-          <div className="bg-[#1A1D27] p-6 rounded-2xl border border-[#2D3148]">
+          <div className="glass rounded-3xl p-6">
 
-            <p className="text-slate-400">
-              Sedang Proses
+            <p className="text-slate-400 mb-3">
+              Interview
             </p>
 
-            <h2 className="text-3xl font-bold mt-2 text-blue-400">
-              {processCount}
+            <h2 className="text-4xl font-black text-yellow-300">
+              {totalInterview}
             </h2>
 
           </div>
 
-          <div className="bg-[#1A1D27] p-6 rounded-2xl border border-[#2D3148]">
+          <div className="glass rounded-3xl p-6">
 
-            <p className="text-slate-400">
-              Diterima
+            <p className="text-slate-400 mb-3">
+              Accepted
             </p>
 
-            <h2 className="text-3xl font-bold mt-2 text-green-400">
-              {accepted}
+            <h2 className="text-4xl font-black text-green-300">
+              {totalAccepted}
             </h2>
 
           </div>
 
-          <div className="bg-[#1A1D27] p-6 rounded-2xl border border-[#2D3148]">
+          <div className="glass rounded-3xl p-6">
 
-            <p className="text-slate-400">
-              Ditolak
+            <p className="text-slate-400 mb-3">
+              Rejected
             </p>
 
-            <h2 className="text-3xl font-bold mt-2 text-red-400">
-              {rejected}
+            <h2 className="text-4xl font-black text-red-300">
+              {totalRejected}
             </h2>
 
           </div>
@@ -472,98 +360,51 @@ export default function DashboardPage() {
         </div>
 
         {/* TABLE */}
-        <div className="bg-[#1A1D27] border border-[#2D3148] rounded-3xl p-6">
+        {
 
-          <div className="flex flex-col md:flex-row gap-4 md:items-center md:justify-between mb-6">
+          loading ? (
 
-            <h2 className="text-2xl font-bold">
-              Riwayat Lamaran
-            </h2>
-
-            <div className="flex flex-col md:flex-row gap-3">
-
-              {/* SEARCH */}
-              <input
-                type="text"
-                placeholder="Cari perusahaan / posisi..."
-                value={search}
-                onChange={(e) =>
-                  setSearch(e.target.value)
-                }
-                className="bg-[#22263A] border border-[#2D3148] rounded-xl px-4 py-3 text-white outline-none"
-              />
-
-              {/* FILTER */}
-              <select
-                value={filter}
-                onChange={(e) =>
-                  setFilter(e.target.value)
-                }
-                className="bg-[#22263A] border border-[#2D3148] rounded-xl px-4 py-3 text-white outline-none"
-              >
-
-                <option value="Semua">
-                  Semua
-                </option>
-
-                <option value="Melamar">
-                  Melamar
-                </option>
-
-                <option value="Interview">
-                  Interview
-                </option>
-
-                <option value="Diterima">
-                  Diterima
-                </option>
-
-                <option value="Ditolak">
-                  Ditolak
-                </option>
-
-              </select>
-
-              {/* BUTTON */}
-              <button
-                onClick={() =>
-                  setShowModal(true)
-                }
-                className="bg-blue-500 hover:bg-blue-600 px-5 py-3 rounded-xl transition"
-              >
-                + Apply Job
-              </button>
-
+            <div
+              className="
+                glass
+                rounded-3xl
+                p-16
+                text-center
+                text-slate-400
+              "
+            >
+              Loading...
             </div>
 
-          </div>
+          ) : (
 
-          <ApplicationTable
-            applications={filteredApplications}
-            onDelete={handleDelete}
-            onUpdateStatus={
-              handleUpdateStatus
-            }
-          />
-
-        </div>
+            <ApplicationTable
+              applications={applications}
+              onDelete={handleDelete}
+              onUpdateStatus={handleUpdateStatus}
+            />
+          )
+        }
 
       </div>
 
       {/* MODAL */}
-      {showModal && (
-        <ApplyJobModal
-          onClose={() =>
-            setShowModal(false)
-          }
-          onSave={handleAddJob}
-        />
-      )}
+      {
+        showModal && (
+
+          <ApplyJobModal
+            onClose={() => setShowModal(false)}
+            onSave={handleAddApplication}
+          />
+        )
+      }
 
       {/* TOAST */}
-      {toast && (
-        <Toast message={toast} />
-      )}
+      {
+        toast && (
+          <Toast message={toast} />
+        )
+      }
 
     </div>
   )

@@ -1,10 +1,11 @@
+import StatusBadge from "./StatusBadge"
+
 export default function ApplicationTable({
   applications,
   onDelete,
   onUpdateStatus,
 }) {
 
-  // FORMAT TANGGAL
   const formatDate = (dateString) => {
 
     if (!dateString) return "-"
@@ -16,11 +17,9 @@ export default function ApplicationTable({
       return date.toLocaleString("id-ID", {
         timeZone: "Asia/Jakarta",
         day: "2-digit",
-        month: "long",
+        month: "short",
         year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-      }) + " WIB"
+      })
 
     } catch {
 
@@ -30,212 +29,211 @@ export default function ApplicationTable({
 
   return (
 
-    <div className="overflow-x-auto">
+    <div
+      className="
+        glass
+        rounded-3xl
+        overflow-hidden
+        border border-white/10
+        shadow-2xl
+      "
+    >
 
-      <table className="w-full text-left min-w-[1000px]">
+      <div className="overflow-x-auto">
 
-        <thead>
+        <table className="w-full min-w-[1000px]">
 
-          <tr className="border-b border-[#2D3148] text-slate-400">
+          <thead>
 
-            <th className="py-4">No</th>
+            <tr
+              className="
+                bg-white/5
+                text-slate-300
+                text-sm
+              "
+            >
 
-            <th>ID App</th>
+              <th className="px-6 py-5 text-left">
+                No
+              </th>
 
-            <th>Perusahaan</th>
+              <th className="px-6 py-5 text-left">
+                Perusahaan
+              </th>
 
-            <th>Posisi</th>
+              <th className="px-6 py-5 text-left">
+                Posisi
+              </th>
 
-            <th>Link Apply</th>
+              <th className="px-6 py-5 text-left">
+                Link
+              </th>
 
-            <th>Status</th>
+              <th className="px-6 py-5 text-left">
+                Status
+              </th>
 
-            <th>Tanggal</th>
+              <th className="px-6 py-5 text-left">
+                Tanggal
+              </th>
 
-            <th>Aksi</th>
+              <th className="px-6 py-5 text-left">
+                Action
+              </th>
 
-          </tr>
+            </tr>
 
-        </thead>
+          </thead>
 
-        <tbody>
+          <tbody>
 
-          {
-            applications.length > 0 ? (
+            {
+              applications.length > 0 ? (
 
-              applications.map((item, index) => (
+                applications.map((item, index) => (
 
-                <tr
-                  key={item.app_id}
-                  className="border-b border-[#2D3148]"
-                >
+                  <tr
+                    key={item.app_id}
+                    className="
+                      border-t border-white/5
+                      hover:bg-white/5
+                      transition
+                    "
+                  >
 
-                  {/* NO */}
-                  <td className="py-4">
-                    {index + 1}
-                  </td>
+                    <td className="px-6 py-5 text-slate-400">
+                      {index + 1}
+                    </td>
 
-                  {/* APP ID */}
-                  <td className="text-slate-400 text-sm">
-                    {item.app_id}
-                  </td>
+                    <td className="px-6 py-5 font-semibold text-white">
+                      {item.nama_pt}
+                    </td>
 
-                  {/* COMPANY */}
-                  <td className="font-medium">
-                    {item.nama_pt}
-                  </td>
+                    <td className="px-6 py-5 text-slate-300">
+                      {item.posisi}
+                    </td>
 
-                  {/* POSITION */}
-                  <td>
-                    {item.posisi}
-                  </td>
+                    <td className="px-6 py-5">
 
-                  {/* LINK APPLY */}
-                  <td>
+                      {
+                        item.link_apply ? (
 
-                    {
-                      item.link_apply ? (
+                          <a
+                            href={item.link_apply}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="
+                              text-pink-300
+                              hover:text-pink-200
+                              transition
+                              underline
+                            "
+                          >
+                            Open
+                          </a>
 
-                        <a
-                          href={item.link_apply}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="
-                            text-blue-400
-                            hover:text-blue-300
-                            underline
-                            text-sm
-                            break-all
-                          "
-                        >
-                          Buka Link
-                        </a>
+                        ) : (
 
-                      ) : (
-
-                        <span className="text-slate-500">
-                          -
-                        </span>
-                      )
-                    }
-
-                  </td>
-
-                  {/* STATUS */}
-                  <td>
-
-                    <span
-                      className={`
-                        px-3 py-1 rounded-lg text-sm font-medium
-
-                        ${item.status === "Melamar"
-                          && "bg-blue-500/20 text-blue-400"}
-
-                        ${item.status === "Interview"
-                          && "bg-yellow-500/20 text-yellow-400"}
-
-                        ${item.status === "Diterima"
-                          && "bg-green-500/20 text-green-400"}
-
-                        ${item.status?.includes("Ditolak")
-                          && "bg-red-500/20 text-red-400"}
-                      `}
-                    >
-                      {item.status}
-                    </span>
-
-                  </td>
-
-                  {/* DATE */}
-                  <td className="text-sm text-slate-300">
-                    {formatDate(item.tanggal_apply)}
-                  </td>
-
-                  {/* ACTION */}
-                  <td className="flex gap-2 py-4">
-
-                    <select
-                      value={item.status}
-                      onChange={(e) =>
-                        onUpdateStatus(
-                          item.app_id,
-                          e.target.value
+                          <span className="text-slate-500">
+                            -
+                          </span>
                         )
                       }
-                      className="
-                        bg-[#22263A]
-                        border
-                        border-[#2D3148]
-                        rounded-lg
-                        px-3
-                        py-2
-                        text-sm
-                        outline-none
-                      "
-                    >
 
-                      <option value="Melamar">
-                        Melamar
-                      </option>
+                    </td>
 
-                      <option value="Interview">
-                        Interview
-                      </option>
+                    <td className="px-6 py-5">
+                      <StatusBadge status={item.status} />
+                    </td>
 
-                      <option value="Diterima">
-                        Diterima
-                      </option>
+                    <td className="px-6 py-5 text-slate-400">
+                      {formatDate(item.tanggal_apply)}
+                    </td>
 
-                      <option value="Ditolak">
-                        Ditolak
-                      </option>
+                    <td className="px-6 py-5 flex gap-3">
 
-                    </select>
+                      <select
+                        value={item.status}
+                        onChange={(e) =>
+                          onUpdateStatus(
+                            item.app_id,
+                            e.target.value
+                          )
+                        }
+                        className="
+                          bg-white/10
+                          border border-white/10
+                          rounded-xl
+                          px-4 py-2
+                          text-sm
+                          outline-none
+                        "
+                      >
 
-                    <button
-                      onClick={() =>
-                        onDelete(item.app_id)
-                      }
-                      className="
-                        bg-red-500
-                        hover:bg-red-600
-                        px-3
-                        py-2
-                        rounded-lg
-                        text-sm
-                        transition
-                      "
-                    >
-                      Hapus
-                    </button>
+                        <option value="Melamar">
+                          Melamar
+                        </option>
 
+                        <option value="Interview">
+                          Interview
+                        </option>
+
+                        <option value="Diterima">
+                          Diterima
+                        </option>
+
+                        <option value="Ditolak">
+                          Ditolak
+                        </option>
+
+                      </select>
+
+                      <button
+                        onClick={() =>
+                          onDelete(item.app_id)
+                        }
+                        className="
+                          bg-red-500/20
+                          hover:bg-red-500
+                          text-red-300
+                          hover:text-white
+                          px-4 py-2
+                          rounded-xl
+                          transition
+                        "
+                      >
+                        Delete
+                      </button>
+
+                    </td>
+
+                  </tr>
+                ))
+
+              ) : (
+
+                <tr>
+
+                  <td
+                    colSpan="7"
+                    className="
+                      text-center
+                      py-16
+                      text-slate-400
+                    "
+                  >
+                    🚀 Belum ada riwayat lamaran
                   </td>
 
                 </tr>
-              ))
+              )
+            }
 
-            ) : (
+          </tbody>
 
-              <tr>
+        </table>
 
-                <td
-                  colSpan="8"
-                  className="
-                    text-center
-                    py-10
-                    text-slate-500
-                  "
-                >
-                  Belum ada riwayat lamaran
-                </td>
-
-              </tr>
-            )
-          }
-
-        </tbody>
-
-      </table>
+      </div>
 
     </div>
   )

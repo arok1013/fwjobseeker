@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import CryptoJS from "crypto-js"
+
 import { saveUserSession } from "../utils/auth"
 
 const API_URL =
@@ -24,110 +25,258 @@ export default function LoginPage() {
 
     try {
 
-      const emailTrimmed = email.trim().toLowerCase()
-
-      // HASH PASSWORD
-      const hashedPassword = CryptoJS.SHA256(password).toString()
-
-      console.log("🔐 Email:", emailTrimmed)
-      console.log("🔐 Hashed Password:", hashedPassword)
-
-      // PENTING:
-      // jangan pakai Content-Type
-      // agar tidak kena CORS preflight
-
       const response = await fetch(API_URL, {
         method: "POST",
         body: JSON.stringify({
           action: "login",
-          email: emailTrimmed,
-          password: hashedPassword,
+          email: email.trim().toLowerCase(),
+          password: CryptoJS
+            .SHA256(password)
+            .toString(),
         }),
       })
 
       const result = await response.json()
 
-      console.log("📦 Response:", result)
-
       if (!result.success) {
 
-        alert(result.message || "Email atau password salah")
+        alert(
+          result.message ||
+          "Email atau password salah"
+        )
 
-        setLoading(false)
         return
       }
 
-      console.log("✅ Login berhasil:", result.user)
-
-      // SAVE SESSION
       saveUserSession(result.user)
 
-      // REDIRECT
       navigate("/dashboard")
 
     } catch (error) {
 
-      console.error("❌ Login Error:", error)
+      console.log(error)
 
-      alert("Login gagal: " + error.message)
+      alert(
+        "Login gagal: " + error.message
+      )
 
     } finally {
 
       setLoading(false)
-
     }
   }
 
   return (
-    <div className="min-h-screen bg-[#0F1117] flex items-center justify-center px-6">
 
-      <div className="w-full max-w-md bg-[#1A1D27] border border-[#2D3148] rounded-3xl p-8">
+    <div
+      className="
+        relative
+        min-h-screen
+        overflow-hidden
+        bg-[#070B14]
+        flex items-center justify-center
+        px-6
+      "
+    >
 
-        <h1 className="text-4xl font-bold text-white text-center mb-8">
-          Login
-        </h1>
+      {/* BACKGROUND */}
+      <div className="absolute top-[-100px] left-[-100px] w-[350px] h-[350px] bg-pink-500/30 rounded-full blur-3xl"></div>
 
-        <form onSubmit={handleLogin} className="space-y-5">
+      <div className="absolute bottom-[-120px] right-[-100px] w-[400px] h-[400px] bg-blue-500/30 rounded-full blur-3xl"></div>
 
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full bg-[#22263A] border border-[#2D3148] rounded-xl px-4 py-3 text-white outline-none focus:border-blue-500 transition"
-            disabled={loading}
-            required
-          />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.08),transparent_40%)]"></div>
 
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full bg-[#22263A] border border-[#2D3148] rounded-xl px-4 py-3 text-white outline-none focus:border-blue-500 transition"
-            disabled={loading}
-            required
-          />
+      {/* CARD */}
+      <div className="relative z-10 w-full max-w-md">
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-blue-500 hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed py-3 rounded-xl font-medium transition text-white"
+        {/* LOGO */}
+        <div className="flex justify-center mb-6">
+
+          <div
+            className="
+              w-16 h-16
+              rounded-2xl
+              bg-gradient-to-br
+              from-pink-400
+              to-purple-500
+              flex items-center justify-center
+              text-3xl
+              shadow-2xl
+              shadow-pink-500/30
+            "
           >
-            {loading ? "Loading..." : "Login"}
-          </button>
+            💼
+          </div>
 
-        </form>
+        </div>
 
-        <p className="text-center text-slate-400 mt-5">
-          Belum punya akun?{" "}
-          <Link
-            to="/register"
-            className="text-blue-400 hover:text-blue-300 transition"
+        <div
+          className="
+            bg-white/10
+            backdrop-blur-2xl
+            border border-white/10
+            rounded-[32px]
+            p-8
+            shadow-[0_10px_60px_rgba(0,0,0,0.5)]
+          "
+        >
+
+          {/* HEADER */}
+          <div className="text-center mb-8">
+
+            <h1
+              className="
+                text-4xl
+                font-black
+                text-white
+                mb-2
+                tracking-tight
+              "
+            >
+              Welcome Back
+            </h1>
+
+            <p className="text-slate-300 text-sm">
+              Login to continue your career journey ✨
+            </p>
+
+          </div>
+
+          {/* FORM */}
+          <form
+            onSubmit={handleLogin}
+            className="space-y-5"
           >
-            Register
-          </Link>
-        </p>
+
+            {/* EMAIL */}
+            <div>
+
+              <label className="text-sm text-slate-300 mb-2 block">
+                Email Address
+              </label>
+
+              <input
+                type="email"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) =>
+                  setEmail(e.target.value)
+                }
+                disabled={loading}
+                required
+                className="
+                  w-full
+                  bg-white/10
+                  border
+                  border-white/10
+                  rounded-2xl
+                  px-5
+                  py-4
+                  text-white
+                  placeholder:text-slate-400
+                  outline-none
+                  focus:border-pink-400
+                  focus:bg-white/15
+                  transition-all
+                  duration-300
+                "
+              />
+
+            </div>
+
+            {/* PASSWORD */}
+            <div>
+
+              <label className="text-sm text-slate-300 mb-2 block">
+                Password
+              </label>
+
+              <input
+                type="password"
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) =>
+                  setPassword(e.target.value)
+                }
+                disabled={loading}
+                required
+                className="
+                  w-full
+                  bg-white/10
+                  border
+                  border-white/10
+                  rounded-2xl
+                  px-5
+                  py-4
+                  text-white
+                  placeholder:text-slate-400
+                  outline-none
+                  focus:border-pink-400
+                  focus:bg-white/15
+                  transition-all
+                  duration-300
+                "
+              />
+
+            </div>
+
+            {/* BUTTON */}
+            <button
+              type="submit"
+              disabled={loading}
+              className="
+                w-full
+                bg-gradient-to-r
+                from-pink-500
+                via-purple-500
+                to-indigo-500
+                hover:scale-[1.02]
+                active:scale-[0.98]
+                transition-all
+                duration-300
+                py-4
+                rounded-2xl
+                font-bold
+                text-white
+                shadow-lg
+                shadow-pink-500/30
+                disabled:opacity-50
+                disabled:cursor-not-allowed
+              "
+            >
+              {
+                loading
+                  ? "Loading..."
+                  : "✨ Login"
+              }
+            </button>
+
+          </form>
+
+          {/* FOOTER */}
+          <div className="mt-8 text-center">
+
+            <p className="text-slate-400 text-sm">
+
+              Belum punya akun?{" "}
+
+              <Link
+                to="/register"
+                className="
+                  text-pink-300
+                  hover:text-pink-200
+                  font-semibold
+                  transition
+                "
+              >
+                Register
+              </Link>
+
+            </p>
+
+          </div>
+
+        </div>
 
       </div>
 

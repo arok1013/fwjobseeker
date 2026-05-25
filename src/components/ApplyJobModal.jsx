@@ -18,7 +18,6 @@ export default function ApplyJobModal({
 
   const [loading, setLoading] = useState(false)
 
-  // HANDLE CHANGE
   const handleChange = (e) => {
 
     setForm({
@@ -27,7 +26,6 @@ export default function ApplyJobModal({
     })
   }
 
-  // SUBMIT
   const handleSubmit = async (e) => {
 
     e.preventDefault()
@@ -37,10 +35,7 @@ export default function ApplyJobModal({
     try {
 
       const payload = {
-
         ...form,
-
-        // FORMAT DATE AGAR SESUAI
         tanggal_apply: new Date(
           form.tanggal_apply
         ).toISOString(),
@@ -64,38 +59,60 @@ export default function ApplyJobModal({
       className="
         fixed inset-0
         bg-black/70
-        backdrop-blur-sm
+        backdrop-blur-md
         flex items-center justify-center
         z-50
         p-4
       "
     >
 
+      {/* BACKDROP BLUR */}
+      <div className="absolute w-96 h-96 bg-pink-500/20 blur-3xl rounded-full"></div>
+
       <div
         className="
+          relative
           w-full
           max-w-2xl
-          bg-[#1A1D27]
-          border border-[#2D3148]
-          rounded-3xl
+          glass
+          rounded-[32px]
           p-8
-          animate-in fade-in zoom-in duration-200
+          border border-white/10
+          shadow-[0_10px_60px_rgba(0,0,0,0.5)]
           max-h-[95vh]
           overflow-y-auto
+          fade-in
         "
       >
 
         {/* HEADER */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-start justify-between mb-8">
 
           <div>
 
-            <h2 className="text-3xl font-bold text-white">
-              Apply Job
+            <div
+              className="
+                w-14 h-14
+                rounded-2xl
+                bg-gradient-to-br
+                from-pink-500
+                to-purple-600
+                flex items-center justify-center
+                text-2xl
+                shadow-lg
+                shadow-pink-500/30
+                mb-4
+              "
+            >
+              💼
+            </div>
+
+            <h2 className="text-3xl font-black text-white">
+              Apply New Job
             </h2>
 
-            <p className="text-slate-400 mt-2 text-sm">
-              Tambahkan riwayat lamaran kerja baru
+            <p className="text-slate-400 mt-2">
+              Simpan riwayat lamaran kerja kamu 🚀
             </p>
 
           </div>
@@ -103,13 +120,13 @@ export default function ApplyJobModal({
           <button
             onClick={onClose}
             className="
-              w-10 h-10
-              rounded-xl
-              bg-[#22263A]
-              hover:bg-[#2D3148]
-              text-slate-400
-              hover:text-white
+              w-11 h-11
+              rounded-2xl
+              bg-white/10
+              hover:bg-red-500
               transition
+              text-slate-300
+              hover:text-white
             "
           >
             ✕
@@ -123,7 +140,7 @@ export default function ApplyJobModal({
           className="space-y-5"
         >
 
-          {/* NAMA PT */}
+          {/* COMPANY */}
           <div>
 
             <label className="block text-sm text-slate-300 mb-2">
@@ -133,25 +150,27 @@ export default function ApplyJobModal({
             <input
               type="text"
               name="nama_pt"
-              placeholder="Contoh: PT Wings Group"
               required
+              placeholder="Contoh: PT Google Indonesia"
               value={form.nama_pt}
               onChange={handleChange}
               className="
                 w-full
-                bg-[#22263A]
-                border border-[#2D3148]
-                rounded-xl
-                px-4 py-3
+                bg-white/10
+                border border-white/10
+                rounded-2xl
+                px-5 py-4
                 text-white
+                placeholder:text-slate-500
                 outline-none
-                focus:border-blue-500
+                focus:border-pink-400
+                transition
               "
             />
 
           </div>
 
-          {/* POSISI */}
+          {/* POSITION */}
           <div>
 
             <label className="block text-sm text-slate-300 mb-2">
@@ -161,25 +180,27 @@ export default function ApplyJobModal({
             <input
               type="text"
               name="posisi"
-              placeholder="Contoh: Frontend Developer"
               required
+              placeholder="Contoh: Frontend Developer"
               value={form.posisi}
               onChange={handleChange}
               className="
                 w-full
-                bg-[#22263A]
-                border border-[#2D3148]
-                rounded-xl
-                px-4 py-3
+                bg-white/10
+                border border-white/10
+                rounded-2xl
+                px-5 py-4
                 text-white
+                placeholder:text-slate-500
                 outline-none
-                focus:border-blue-500
+                focus:border-pink-400
+                transition
               "
             />
 
           </div>
 
-          {/* JOB DESKRIPSI */}
+          {/* DESCRIPTION */}
           <div>
 
             <label className="block text-sm text-slate-300 mb-2">
@@ -187,27 +208,29 @@ export default function ApplyJobModal({
             </label>
 
             <textarea
-              name="job_deskripsi"
-              placeholder="Masukkan deskripsi pekerjaan..."
               rows="4"
+              name="job_deskripsi"
+              placeholder="Masukkan detail pekerjaan..."
               value={form.job_deskripsi}
               onChange={handleChange}
               className="
                 w-full
-                bg-[#22263A]
-                border border-[#2D3148]
-                rounded-xl
-                px-4 py-3
+                bg-white/10
+                border border-white/10
+                rounded-2xl
+                px-5 py-4
                 text-white
+                placeholder:text-slate-500
                 outline-none
                 resize-none
-                focus:border-blue-500
+                focus:border-pink-400
+                transition
               "
             />
 
           </div>
 
-          {/* TANGGAL APPLY */}
+          {/* DATE */}
           <div>
 
             <label className="block text-sm text-slate-300 mb-2">
@@ -222,19 +245,20 @@ export default function ApplyJobModal({
               onChange={handleChange}
               className="
                 w-full
-                bg-[#22263A]
-                border border-[#2D3148]
-                rounded-xl
-                px-4 py-3
+                bg-white/10
+                border border-white/10
+                rounded-2xl
+                px-5 py-4
                 text-white
                 outline-none
-                focus:border-blue-500
+                focus:border-pink-400
+                transition
               "
             />
 
           </div>
 
-          {/* LINK APPLY */}
+          {/* LINK */}
           <div>
 
             <label className="block text-sm text-slate-300 mb-2">
@@ -244,28 +268,26 @@ export default function ApplyJobModal({
             <input
               type="url"
               name="link_apply"
-              placeholder="https://company.com/career"
+              placeholder="https://company.com/jobs"
               value={form.link_apply}
               onChange={handleChange}
               className="
                 w-full
-                bg-[#22263A]
-                border border-[#2D3148]
-                rounded-xl
-                px-4 py-3
+                bg-white/10
+                border border-white/10
+                rounded-2xl
+                px-5 py-4
                 text-white
+                placeholder:text-slate-500
                 outline-none
-                focus:border-blue-500
+                focus:border-pink-400
+                transition
               "
             />
 
-            <p className="text-xs text-slate-500 mt-2">
-              Opsional - bisa diisi link lowongan kerja
-            </p>
-
           </div>
 
-          {/* CATATAN */}
+          {/* NOTES */}
           <div>
 
             <label className="block text-sm text-slate-300 mb-2">
@@ -273,47 +295,57 @@ export default function ApplyJobModal({
             </label>
 
             <textarea
+              rows="3"
               name="catatan"
               placeholder="Tambahkan catatan..."
-              rows="3"
               value={form.catatan}
               onChange={handleChange}
               className="
                 w-full
-                bg-[#22263A]
-                border border-[#2D3148]
-                rounded-xl
-                px-4 py-3
+                bg-white/10
+                border border-white/10
+                rounded-2xl
+                px-5 py-4
                 text-white
+                placeholder:text-slate-500
                 outline-none
                 resize-none
-                focus:border-blue-500
+                focus:border-pink-400
+                transition
               "
             />
 
           </div>
 
-          {/* BUTTON */}
-          <div className="flex gap-3 pt-3">
+          {/* BUTTONS */}
+          <div className="flex gap-4 pt-4">
 
             <button
               type="submit"
               disabled={loading}
               className="
-                bg-blue-500
-                hover:bg-blue-600
+                flex-1
+                bg-gradient-to-r
+                from-pink-500
+                via-purple-500
+                to-indigo-500
+                hover:scale-[1.02]
+                active:scale-[0.98]
+                transition-all
+                py-4
+                rounded-2xl
+                font-bold
+                text-white
+                shadow-lg
+                shadow-pink-500/30
                 disabled:opacity-50
-                px-6 py-3
-                rounded-xl
-                font-medium
-                transition
               "
             >
 
               {
                 loading
-                  ? "Menyimpan..."
-                  : "Simpan"
+                  ? "Saving..."
+                  : "✨ Simpan Lamaran"
               }
 
             </button>
@@ -322,10 +354,10 @@ export default function ApplyJobModal({
               type="button"
               onClick={onClose}
               className="
-                bg-[#22263A]
-                hover:bg-[#2D3148]
-                px-6 py-3
-                rounded-xl
+                px-6
+                bg-white/10
+                hover:bg-white/20
+                rounded-2xl
                 transition
               "
             >

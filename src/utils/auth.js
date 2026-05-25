@@ -1,15 +1,32 @@
-export const saveUserSession = (user) => {
-  localStorage.setItem("user", JSON.stringify(user))
+const STORAGE_KEY = "fwjobseeker_user"
+
+export function saveUserSession(user) {
+
+  localStorage.setItem(
+    STORAGE_KEY,
+    JSON.stringify(user)
+  )
 }
 
-export const getUserSession = () => {
-  return JSON.parse(localStorage.getItem("user"))
+export function getUserSession() {
+
+  try {
+
+    const user = localStorage.getItem(
+      STORAGE_KEY
+    )
+
+    if (!user) return null
+
+    return JSON.parse(user)
+
+  } catch {
+
+    return null
+  }
 }
 
-export const logoutSession = () => {
-  localStorage.removeItem("user")
-}
+export function logout() {
 
-export const isAuthenticated = () => {
-  return !!localStorage.getItem("user")
+  localStorage.removeItem(STORAGE_KEY)
 }
