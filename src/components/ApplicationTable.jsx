@@ -14,12 +14,14 @@ export default function ApplicationTable({
 
       const date = new Date(dateString)
 
-      return date.toLocaleString("id-ID", {
-        timeZone: "Asia/Jakarta",
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-      })
+      return date.toLocaleDateString(
+        "id-ID",
+        {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+        }
+      )
 
     } catch {
 
@@ -31,14 +33,48 @@ export default function ApplicationTable({
 
     <div
       className="
-        glass
-        rounded-3xl
+        bg-[#111827]/80
+        backdrop-blur-xl
+        border border-slate-700/50
+        rounded-[32px]
         overflow-hidden
-        border border-white/10
-        shadow-2xl
       "
     >
 
+      {/* HEADER */}
+      <div
+        className="
+          flex
+          items-center
+          justify-between
+          px-8
+          py-6
+          border-b border-slate-700/50
+        "
+      >
+
+        <div>
+
+          <h2
+            className="
+              text-2xl
+              font-black
+              text-white
+              mb-1
+            "
+          >
+            Applications
+          </h2>
+
+          <p className="text-slate-400 text-sm">
+            Track and manage all applications
+          </p>
+
+        </div>
+
+      </div>
+
+      {/* TABLE */}
       <div className="overflow-x-auto">
 
         <table className="w-full min-w-[1000px]">
@@ -47,38 +83,34 @@ export default function ApplicationTable({
 
             <tr
               className="
-                bg-white/5
-                text-slate-300
-                text-sm
+                border-b
+                border-slate-700/50
+                bg-slate-900/40
               "
             >
 
-              <th className="px-6 py-5 text-left">
-                No
+              <th className="px-6 py-5 text-left text-sm text-slate-400 font-semibold">
+                Company
               </th>
 
-              <th className="px-6 py-5 text-left">
-                Perusahaan
+              <th className="px-6 py-5 text-left text-sm text-slate-400 font-semibold">
+                Position
               </th>
 
-              <th className="px-6 py-5 text-left">
-                Posisi
-              </th>
-
-              <th className="px-6 py-5 text-left">
-                Link
-              </th>
-
-              <th className="px-6 py-5 text-left">
+              <th className="px-6 py-5 text-left text-sm text-slate-400 font-semibold">
                 Status
               </th>
 
-              <th className="px-6 py-5 text-left">
-                Tanggal
+              <th className="px-6 py-5 text-left text-sm text-slate-400 font-semibold">
+                Date
               </th>
 
-              <th className="px-6 py-5 text-left">
-                Action
+              <th className="px-6 py-5 text-left text-sm text-slate-400 font-semibold">
+                Link
+              </th>
+
+              <th className="px-6 py-5 text-left text-sm text-slate-400 font-semibold">
+                Actions
               </th>
 
             </tr>
@@ -90,29 +122,57 @@ export default function ApplicationTable({
             {
               applications.length > 0 ? (
 
-                applications.map((item, index) => (
+                applications.map((item) => (
 
                   <tr
                     key={item.app_id}
                     className="
-                      border-t border-white/5
-                      hover:bg-white/5
-                      transition
+                      border-b
+                      border-slate-800
+                      hover:bg-slate-800/40
+                      transition-all
                     "
                   >
 
-                    <td className="px-6 py-5 text-slate-400">
-                      {index + 1}
+                    {/* COMPANY */}
+                    <td className="px-6 py-5">
+
+                      <div>
+
+                        <h3 className="font-semibold text-white">
+                          {item.nama_pt}
+                        </h3>
+
+                        <p className="text-sm text-slate-500 mt-1">
+                          {item.job_deskripsi
+                            ? item.job_deskripsi.slice(0, 40) + "..."
+                            : "No description"}
+                        </p>
+
+                      </div>
+
                     </td>
 
-                    <td className="px-6 py-5 font-semibold text-white">
-                      {item.nama_pt}
-                    </td>
-
+                    {/* POSITION */}
                     <td className="px-6 py-5 text-slate-300">
                       {item.posisi}
                     </td>
 
+                    {/* STATUS */}
+                    <td className="px-6 py-5">
+                      <StatusBadge
+                        status={item.status}
+                      />
+                    </td>
+
+                    {/* DATE */}
+                    <td className="px-6 py-5 text-slate-400">
+                      {formatDate(
+                        item.tanggal_apply
+                      )}
+                    </td>
+
+                    {/* LINK */}
                     <td className="px-6 py-5">
 
                       {
@@ -123,18 +183,18 @@ export default function ApplicationTable({
                             target="_blank"
                             rel="noreferrer"
                             className="
-                              text-pink-300
-                              hover:text-pink-200
+                              text-cyan-300
+                              hover:text-cyan-200
                               transition
-                              underline
+                              font-medium
                             "
                           >
-                            Open
+                            Open Link
                           </a>
 
                         ) : (
 
-                          <span className="text-slate-500">
+                          <span className="text-slate-600">
                             -
                           </span>
                         )
@@ -142,68 +202,70 @@ export default function ApplicationTable({
 
                     </td>
 
+                    {/* ACTIONS */}
                     <td className="px-6 py-5">
-                      <StatusBadge status={item.status} />
-                    </td>
 
-                    <td className="px-6 py-5 text-slate-400">
-                      {formatDate(item.tanggal_apply)}
-                    </td>
+                      <div className="flex items-center gap-3">
 
-                    <td className="px-6 py-5 flex gap-3">
+                        {/* STATUS */}
+                        <select
+                          value={item.status}
+                          onChange={(e) =>
+                            onUpdateStatus(
+                              item.app_id,
+                              e.target.value
+                            )
+                          }
+                          className="
+                            bg-slate-900
+                            border border-slate-700
+                            rounded-xl
+                            px-4 py-2
+                            text-sm
+                            text-white
+                            outline-none
+                            focus:border-cyan-400
+                          "
+                        >
 
-                      <select
-                        value={item.status}
-                        onChange={(e) =>
-                          onUpdateStatus(
-                            item.app_id,
-                            e.target.value
-                          )
-                        }
-                        className="
-                          bg-white/10
-                          border border-white/10
-                          rounded-xl
-                          px-4 py-2
-                          text-sm
-                          outline-none
-                        "
-                      >
+                          <option value="Melamar">
+                            Melamar
+                          </option>
 
-                        <option value="Melamar">
-                          Melamar
-                        </option>
+                          <option value="Interview">
+                            Interview
+                          </option>
 
-                        <option value="Interview">
-                          Interview
-                        </option>
+                          <option value="Diterima">
+                            Diterima
+                          </option>
 
-                        <option value="Diterima">
-                          Diterima
-                        </option>
+                          <option value="Ditolak">
+                            Ditolak
+                          </option>
 
-                        <option value="Ditolak">
-                          Ditolak
-                        </option>
+                        </select>
 
-                      </select>
+                        {/* DELETE */}
+                        <button
+                          onClick={() =>
+                            onDelete(item.app_id)
+                          }
+                          className="
+                            bg-red-500/10
+                            hover:bg-red-500
+                            border border-red-500/20
+                            text-red-300
+                            hover:text-white
+                            px-4 py-2
+                            rounded-xl
+                            transition-all
+                          "
+                        >
+                          Delete
+                        </button>
 
-                      <button
-                        onClick={() =>
-                          onDelete(item.app_id)
-                        }
-                        className="
-                          bg-red-500/20
-                          hover:bg-red-500
-                          text-red-300
-                          hover:text-white
-                          px-4 py-2
-                          rounded-xl
-                          transition
-                        "
-                      >
-                        Delete
-                      </button>
+                      </div>
 
                     </td>
 
@@ -215,14 +277,32 @@ export default function ApplicationTable({
                 <tr>
 
                   <td
-                    colSpan="7"
+                    colSpan="6"
                     className="
                       text-center
-                      py-16
-                      text-slate-400
+                      py-20
                     "
                   >
-                    🚀 Belum ada riwayat lamaran
+
+                    <div className="mb-4 text-5xl">
+                      📭
+                    </div>
+
+                    <h3
+                      className="
+                        text-xl
+                        font-bold
+                        text-white
+                        mb-2
+                      "
+                    >
+                      No applications yet
+                    </h3>
+
+                    <p className="text-slate-400">
+                      Start adding your job applications
+                    </p>
+
                   </td>
 
                 </tr>

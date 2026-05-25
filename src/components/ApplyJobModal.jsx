@@ -57,76 +57,99 @@ export default function ApplyJobModal({
 
     <div
       className="
-        fixed inset-0
+        fixed
+        inset-0
+        z-50
+        flex
+        items-center
+        justify-center
         bg-black/70
         backdrop-blur-md
-        flex items-center justify-center
-        z-50
         p-4
       "
     >
 
-      {/* BACKDROP BLUR */}
-      <div className="absolute w-96 h-96 bg-pink-500/20 blur-3xl rounded-full"></div>
+      {/* BACKGROUND EFFECT */}
+      <div className="absolute w-[400px] h-[400px] bg-cyan-500/10 blur-3xl rounded-full"></div>
 
+      {/* MODAL */}
       <div
         className="
           relative
           w-full
           max-w-2xl
-          glass
+          bg-[#111827]/90
+          backdrop-blur-2xl
+          border border-slate-700/50
           rounded-[32px]
           p-8
-          border border-white/10
-          shadow-[0_10px_60px_rgba(0,0,0,0.5)]
+          shadow-[0_10px_60px_rgba(0,0,0,0.7)]
           max-h-[95vh]
           overflow-y-auto
-          fade-in
         "
       >
 
         {/* HEADER */}
-        <div className="flex items-start justify-between mb-8">
+        <div
+          className="
+            flex
+            items-start
+            justify-between
+            mb-8
+          "
+        >
 
           <div>
 
             <div
               className="
-                w-14 h-14
+                w-14
+                h-14
                 rounded-2xl
                 bg-gradient-to-br
-                from-pink-500
-                to-purple-600
-                flex items-center justify-center
+                from-cyan-500
+                to-indigo-600
+                flex
+                items-center
+                justify-center
                 text-2xl
+                text-white
                 shadow-lg
-                shadow-pink-500/30
+                shadow-cyan-500/20
                 mb-4
               "
             >
               💼
             </div>
 
-            <h2 className="text-3xl font-black text-white">
-              Apply New Job
+            <h2
+              className="
+                text-3xl
+                font-black
+                text-white
+                mb-2
+              "
+            >
+              Add Application
             </h2>
 
-            <p className="text-slate-400 mt-2">
-              Simpan riwayat lamaran kerja kamu 🚀
+            <p className="text-slate-400">
+              Save and organize your job applications
             </p>
 
           </div>
 
+          {/* CLOSE */}
           <button
             onClick={onClose}
             className="
-              w-11 h-11
+              w-11
+              h-11
               rounded-2xl
-              bg-white/10
+              bg-slate-800
               hover:bg-red-500
-              transition
-              text-slate-300
-              hover:text-white
+              transition-all
+              text-white
             "
           >
             ✕
@@ -144,27 +167,28 @@ export default function ApplyJobModal({
           <div>
 
             <label className="block text-sm text-slate-300 mb-2">
-              Nama Perusahaan
+              Company Name
             </label>
 
             <input
               type="text"
               name="nama_pt"
               required
-              placeholder="Contoh: PT Google Indonesia"
+              placeholder="e.g. Google Indonesia"
               value={form.nama_pt}
               onChange={handleChange}
               className="
                 w-full
-                bg-white/10
-                border border-white/10
+                bg-slate-900/80
+                border border-slate-700/50
                 rounded-2xl
-                px-5 py-4
+                px-5
+                py-4
                 text-white
                 placeholder:text-slate-500
                 outline-none
-                focus:border-pink-400
-                transition
+                focus:border-cyan-400
+                transition-all
               "
             />
 
@@ -174,27 +198,28 @@ export default function ApplyJobModal({
           <div>
 
             <label className="block text-sm text-slate-300 mb-2">
-              Posisi
+              Position
             </label>
 
             <input
               type="text"
               name="posisi"
               required
-              placeholder="Contoh: Frontend Developer"
+              placeholder="e.g. Frontend Developer"
               value={form.posisi}
               onChange={handleChange}
               className="
                 w-full
-                bg-white/10
-                border border-white/10
+                bg-slate-900/80
+                border border-slate-700/50
                 rounded-2xl
-                px-5 py-4
+                px-5
+                py-4
                 text-white
                 placeholder:text-slate-500
                 outline-none
-                focus:border-pink-400
-                transition
+                focus:border-cyan-400
+                transition-all
               "
             />
 
@@ -204,27 +229,28 @@ export default function ApplyJobModal({
           <div>
 
             <label className="block text-sm text-slate-300 mb-2">
-              Job Deskripsi
+              Job Description
             </label>
 
             <textarea
               rows="4"
               name="job_deskripsi"
-              placeholder="Masukkan detail pekerjaan..."
+              placeholder="Write job details..."
               value={form.job_deskripsi}
               onChange={handleChange}
               className="
                 w-full
-                bg-white/10
-                border border-white/10
+                bg-slate-900/80
+                border border-slate-700/50
                 rounded-2xl
-                px-5 py-4
+                px-5
+                py-4
                 text-white
                 placeholder:text-slate-500
                 outline-none
                 resize-none
-                focus:border-pink-400
-                transition
+                focus:border-cyan-400
+                transition-all
               "
             />
 
@@ -234,7 +260,7 @@ export default function ApplyJobModal({
           <div>
 
             <label className="block text-sm text-slate-300 mb-2">
-              Tanggal Apply
+              Apply Date
             </label>
 
             <input
@@ -245,14 +271,15 @@ export default function ApplyJobModal({
               onChange={handleChange}
               className="
                 w-full
-                bg-white/10
-                border border-white/10
+                bg-slate-900/80
+                border border-slate-700/50
                 rounded-2xl
-                px-5 py-4
+                px-5
+                py-4
                 text-white
                 outline-none
-                focus:border-pink-400
-                transition
+                focus:border-cyan-400
+                transition-all
               "
             />
 
@@ -262,7 +289,7 @@ export default function ApplyJobModal({
           <div>
 
             <label className="block text-sm text-slate-300 mb-2">
-              Link Apply
+              Application Link
             </label>
 
             <input
@@ -273,15 +300,16 @@ export default function ApplyJobModal({
               onChange={handleChange}
               className="
                 w-full
-                bg-white/10
-                border border-white/10
+                bg-slate-900/80
+                border border-slate-700/50
                 rounded-2xl
-                px-5 py-4
+                px-5
+                py-4
                 text-white
                 placeholder:text-slate-500
                 outline-none
-                focus:border-pink-400
-                transition
+                focus:border-cyan-400
+                transition-all
               "
             />
 
@@ -291,27 +319,28 @@ export default function ApplyJobModal({
           <div>
 
             <label className="block text-sm text-slate-300 mb-2">
-              Catatan
+              Notes
             </label>
 
             <textarea
               rows="3"
               name="catatan"
-              placeholder="Tambahkan catatan..."
+              placeholder="Additional notes..."
               value={form.catatan}
               onChange={handleChange}
               className="
                 w-full
-                bg-white/10
-                border border-white/10
+                bg-slate-900/80
+                border border-slate-700/50
                 rounded-2xl
-                px-5 py-4
+                px-5
+                py-4
                 text-white
                 placeholder:text-slate-500
                 outline-none
                 resize-none
-                focus:border-pink-400
-                transition
+                focus:border-cyan-400
+                transition-all
               "
             />
 
@@ -320,48 +349,49 @@ export default function ApplyJobModal({
           {/* BUTTONS */}
           <div className="flex gap-4 pt-4">
 
+            {/* SAVE */}
             <button
               type="submit"
               disabled={loading}
               className="
                 flex-1
                 bg-gradient-to-r
-                from-pink-500
-                via-purple-500
-                to-indigo-500
-                hover:scale-[1.02]
-                active:scale-[0.98]
+                from-cyan-500
+                via-blue-500
+                to-indigo-600
+                hover:scale-[1.01]
+                active:scale-[0.99]
                 transition-all
                 py-4
                 rounded-2xl
-                font-bold
+                font-semibold
                 text-white
                 shadow-lg
-                shadow-pink-500/30
+                shadow-cyan-500/20
                 disabled:opacity-50
               "
             >
-
               {
                 loading
                   ? "Saving..."
-                  : "✨ Simpan Lamaran"
+                  : "Save Application"
               }
-
             </button>
 
+            {/* CANCEL */}
             <button
               type="button"
               onClick={onClose}
               className="
                 px-6
-                bg-white/10
-                hover:bg-white/20
+                bg-slate-800
+                hover:bg-slate-700
                 rounded-2xl
-                transition
+                transition-all
+                text-white
               "
             >
-              Batal
+              Cancel
             </button>
 
           </div>

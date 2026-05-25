@@ -73,18 +73,16 @@ export default function LoginPage() {
         relative
         min-h-screen
         overflow-hidden
-        bg-[#070B14]
+        bg-[#020617]
         flex items-center justify-center
         px-6
       "
     >
 
       {/* BACKGROUND */}
-      <div className="absolute top-[-100px] left-[-100px] w-[350px] h-[350px] bg-pink-500/30 rounded-full blur-3xl"></div>
+      <div className="absolute top-[-100px] left-[-100px] w-[350px] h-[350px] bg-cyan-500/20 rounded-full blur-3xl"></div>
 
-      <div className="absolute bottom-[-120px] right-[-100px] w-[400px] h-[400px] bg-blue-500/30 rounded-full blur-3xl"></div>
-
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.08),transparent_40%)]"></div>
+      <div className="absolute bottom-[-120px] right-[-100px] w-[400px] h-[400px] bg-indigo-500/20 rounded-full blur-3xl"></div>
 
       {/* CARD */}
       <div className="relative z-10 w-full max-w-md">
@@ -97,27 +95,28 @@ export default function LoginPage() {
               w-16 h-16
               rounded-2xl
               bg-gradient-to-br
-              from-pink-400
-              to-purple-500
+              from-cyan-500
+              to-indigo-600
               flex items-center justify-center
-              text-3xl
+              text-2xl
               shadow-2xl
-              shadow-pink-500/30
+              shadow-cyan-500/20
             "
           >
-            💼
+            📊
           </div>
 
         </div>
 
+        {/* CARD */}
         <div
           className="
-            bg-white/10
+            bg-[#111827]/80
             backdrop-blur-2xl
-            border border-white/10
+            border border-slate-700/50
             rounded-[32px]
             p-8
-            shadow-[0_10px_60px_rgba(0,0,0,0.5)]
+            shadow-[0_10px_60px_rgba(0,0,0,0.6)]
           "
         >
 
@@ -129,15 +128,15 @@ export default function LoginPage() {
                 text-4xl
                 font-black
                 text-white
-                mb-2
+                mb-3
                 tracking-tight
               "
             >
               Welcome Back
             </h1>
 
-            <p className="text-slate-300 text-sm">
-              Login to continue your career journey ✨
+            <p className="text-slate-400 text-sm">
+              Manage and monitor your job applications
             </p>
 
           </div>
@@ -166,17 +165,16 @@ export default function LoginPage() {
                 required
                 className="
                   w-full
-                  bg-white/10
+                  bg-slate-900/80
                   border
-                  border-white/10
+                  border-slate-700/50
                   rounded-2xl
                   px-5
                   py-4
                   text-white
-                  placeholder:text-slate-400
+                  placeholder:text-slate-500
                   outline-none
-                  focus:border-pink-400
-                  focus:bg-white/15
+                  focus:border-cyan-400
                   transition-all
                   duration-300
                 "
@@ -202,17 +200,16 @@ export default function LoginPage() {
                 required
                 className="
                   w-full
-                  bg-white/10
+                  bg-slate-900/80
                   border
-                  border-white/10
+                  border-slate-700/50
                   rounded-2xl
                   px-5
                   py-4
                   text-white
-                  placeholder:text-slate-400
+                  placeholder:text-slate-500
                   outline-none
-                  focus:border-pink-400
-                  focus:bg-white/15
+                  focus:border-cyan-400
                   transition-all
                   duration-300
                 "
@@ -227,9 +224,9 @@ export default function LoginPage() {
               className="
                 w-full
                 bg-gradient-to-r
-                from-pink-500
-                via-purple-500
-                to-indigo-500
+                from-cyan-500
+                via-blue-500
+                to-indigo-600
                 hover:scale-[1.02]
                 active:scale-[0.98]
                 transition-all
@@ -239,7 +236,7 @@ export default function LoginPage() {
                 font-bold
                 text-white
                 shadow-lg
-                shadow-pink-500/30
+                shadow-cyan-500/20
                 disabled:opacity-50
                 disabled:cursor-not-allowed
               "
@@ -247,7 +244,7 @@ export default function LoginPage() {
               {
                 loading
                   ? "Loading..."
-                  : "✨ Login"
+                  : "Login"
               }
             </button>
 
@@ -263,8 +260,8 @@ export default function LoginPage() {
               <Link
                 to="/register"
                 className="
-                  text-pink-300
-                  hover:text-pink-200
+                  text-cyan-300
+                  hover:text-cyan-200
                   font-semibold
                   transition
                 "

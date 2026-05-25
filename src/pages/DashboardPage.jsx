@@ -31,7 +31,6 @@ export default function DashboardPage() {
 
   const [toast, setToast] = useState("")
 
-  // LOAD USER
   useEffect(() => {
 
     const currentUser = getUserSession()
@@ -47,7 +46,6 @@ export default function DashboardPage() {
 
   }, [])
 
-  // LOAD DATA
   const loadApplications = async (userId) => {
 
     try {
@@ -70,8 +68,7 @@ export default function DashboardPage() {
     }
   }
 
-  // TOAST
-  const showToast = (message) => {
+  const showToastMessage = (message) => {
 
     setToast(message)
 
@@ -80,7 +77,6 @@ export default function DashboardPage() {
     }, 2500)
   }
 
-  // ADD APPLICATION
   const handleAddApplication = async (payload) => {
 
     try {
@@ -103,7 +99,7 @@ export default function DashboardPage() {
 
       setShowModal(false)
 
-      showToast("Lamaran berhasil ditambahkan ✨")
+      showToastMessage("Application added")
 
     } catch (error) {
 
@@ -111,11 +107,10 @@ export default function DashboardPage() {
     }
   }
 
-  // DELETE
   const handleDelete = async (app_id) => {
 
     const confirmDelete = confirm(
-      "Yakin ingin menghapus lamaran ini?"
+      "Delete this application?"
     )
 
     if (!confirmDelete) return
@@ -126,7 +121,7 @@ export default function DashboardPage() {
 
       await loadApplications(user.user_id)
 
-      showToast("Lamaran berhasil dihapus 🗑️")
+      showToastMessage("Application deleted")
 
     } catch (error) {
 
@@ -134,7 +129,6 @@ export default function DashboardPage() {
     }
   }
 
-  // UPDATE STATUS
   const handleUpdateStatus = async (
     app_id,
     status
@@ -146,7 +140,7 @@ export default function DashboardPage() {
 
       await loadApplications(user.user_id)
 
-      showToast("Status berhasil diupdate 🚀")
+      showToastMessage("Status updated")
 
     } catch (error) {
 
@@ -154,7 +148,6 @@ export default function DashboardPage() {
     }
   }
 
-  // LOGOUT
   const handleLogout = () => {
 
     logout()
@@ -183,65 +176,71 @@ export default function DashboardPage() {
 
   return (
 
-    <div className="min-h-screen relative overflow-hidden px-6 py-8">
+    <div className="min-h-screen relative overflow-hidden bg-[#020617]">
 
       {/* BACKGROUND */}
-      <div className="absolute top-0 left-0 w-96 h-96 bg-pink-500/20 blur-3xl rounded-full"></div>
+      <div className="absolute top-0 left-0 w-[400px] h-[400px] bg-cyan-500/10 blur-3xl rounded-full"></div>
 
-      <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-500/20 blur-3xl rounded-full"></div>
+      <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-indigo-500/10 blur-3xl rounded-full"></div>
 
       {/* CONTENT */}
-      <div className="relative z-10 max-w-7xl mx-auto">
+      <div className="relative z-10 p-6 lg:p-10">
 
-        {/* HEADER */}
+        {/* TOPBAR */}
         <div
           className="
-            glass
+            bg-[#111827]/80
+            backdrop-blur-xl
+            border border-slate-700/50
             rounded-[32px]
             p-6
-            flex flex-col lg:flex-row
+            mb-8
+            flex
+            flex-col
+            lg:flex-row
             lg:items-center
             justify-between
             gap-6
-            mb-8
           "
         >
 
+          {/* LEFT */}
           <div>
 
-            <div
-              className="
-                inline-flex
-                items-center
-                gap-3
-                mb-4
-              "
-            >
+            <div className="flex items-center gap-4 mb-4">
 
               <div
                 className="
                   w-14 h-14
                   rounded-2xl
                   bg-gradient-to-br
-                  from-pink-500
-                  to-purple-600
-                  flex items-center justify-center
+                  from-cyan-500
+                  to-indigo-600
+                  flex
+                  items-center
+                  justify-center
                   text-2xl
                   shadow-lg
-                  shadow-pink-500/30
+                  shadow-cyan-500/20
                 "
               >
-                💼
+                📊
               </div>
 
               <div>
 
-                <h1 className="text-3xl font-black text-white">
+                <h1
+                  className="
+                    text-3xl
+                    font-black
+                    text-white
+                  "
+                >
                   FWJobSeeker
                 </h1>
 
                 <p className="text-slate-400">
-                  Track your job journey 🚀
+                  Job Application Tracker
                 </p>
 
               </div>
@@ -250,44 +249,48 @@ export default function DashboardPage() {
 
             <p className="text-slate-300">
               Welcome back,{" "}
-              <span className="font-bold text-pink-300">
+              <span className="text-cyan-300 font-semibold">
                 {user?.name}
               </span>
             </p>
 
           </div>
 
-          {/* ACTIONS */}
-          <div className="flex flex-wrap gap-4">
+          {/* RIGHT */}
+          <div className="flex gap-4 flex-wrap">
 
             <button
               onClick={() => setShowModal(true)}
               className="
                 bg-gradient-to-r
-                from-pink-500
-                via-purple-500
-                to-indigo-500
+                from-cyan-500
+                via-blue-500
+                to-indigo-600
                 hover:scale-[1.02]
                 active:scale-[0.98]
                 transition-all
-                px-6 py-4
+                px-6
+                py-4
                 rounded-2xl
                 font-semibold
+                text-white
                 shadow-lg
-                shadow-pink-500/30
+                shadow-cyan-500/20
               "
             >
-              ✨ Add Application
+              Add Application
             </button>
 
             <button
               onClick={handleLogout}
               className="
-                bg-white/10
+                bg-slate-800
                 hover:bg-red-500
                 transition
-                px-6 py-4
+                px-6
+                py-4
                 rounded-2xl
+                text-white
               "
             >
               Logout
@@ -309,43 +312,75 @@ export default function DashboardPage() {
           "
         >
 
-          <div className="glass rounded-3xl p-6">
+          {/* CARD */}
+          <div
+            className="
+              bg-[#111827]/80
+              border border-slate-700/50
+              rounded-3xl
+              p-6
+            "
+          >
 
             <p className="text-slate-400 mb-3">
-              Total Apply
+              Total Applications
             </p>
 
-            <h2 className="text-4xl font-black">
+            <h2 className="text-4xl font-black text-white">
               {totalApply}
             </h2>
 
           </div>
 
-          <div className="glass rounded-3xl p-6">
+          {/* CARD */}
+          <div
+            className="
+              bg-[#111827]/80
+              border border-slate-700/50
+              rounded-3xl
+              p-6
+            "
+          >
 
             <p className="text-slate-400 mb-3">
               Interview
             </p>
 
-            <h2 className="text-4xl font-black text-yellow-300">
+            <h2 className="text-4xl font-black text-cyan-300">
               {totalInterview}
             </h2>
 
           </div>
 
-          <div className="glass rounded-3xl p-6">
+          {/* CARD */}
+          <div
+            className="
+              bg-[#111827]/80
+              border border-slate-700/50
+              rounded-3xl
+              p-6
+            "
+          >
 
             <p className="text-slate-400 mb-3">
               Accepted
             </p>
 
-            <h2 className="text-4xl font-black text-green-300">
+            <h2 className="text-4xl font-black text-emerald-300">
               {totalAccepted}
             </h2>
 
           </div>
 
-          <div className="glass rounded-3xl p-6">
+          {/* CARD */}
+          <div
+            className="
+              bg-[#111827]/80
+              border border-slate-700/50
+              rounded-3xl
+              p-6
+            "
+          >
 
             <p className="text-slate-400 mb-3">
               Rejected
@@ -366,7 +401,8 @@ export default function DashboardPage() {
 
             <div
               className="
-                glass
+                bg-[#111827]/80
+                border border-slate-700/50
                 rounded-3xl
                 p-16
                 text-center
