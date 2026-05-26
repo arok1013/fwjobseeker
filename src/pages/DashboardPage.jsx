@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useNavigate } from "react-router-dom"
 
 import ApplyJobModal from "../components/ApplyJobModal"
@@ -30,6 +30,9 @@ export default function DashboardPage() {
   const [showModal, setShowModal] = useState(false)
 
   const [toast, setToast] = useState("")
+
+  // SEARCH
+  const [search, setSearch] = useState("")
 
   useEffect(() => {
 
@@ -154,6 +157,28 @@ export default function DashboardPage() {
 
     navigate("/login")
   }
+
+  // FILTER SEARCH
+  const filteredApplications = useMemo(() => {
+
+    return applications.filter((item) => {
+
+      const keyword = search.toLowerCase()
+
+      return (
+        item.nama_pt
+          ?.toLowerCase()
+          .includes(keyword)
+
+        ||
+
+        item.posisi
+          ?.toLowerCase()
+          .includes(keyword)
+      )
+    })
+
+  }, [applications, search])
 
   // STATS
   const totalApply = applications.length
@@ -300,6 +325,61 @@ export default function DashboardPage() {
 
         </div>
 
+        {/* SEARCH */}
+        <div
+          className="
+            bg-[#111827]/80
+            backdrop-blur-xl
+            border border-slate-700/50
+            rounded-[28px]
+            p-5
+            mb-8
+          "
+        >
+
+          <div className="relative">
+
+            {/* ICON */}
+            <div
+              className="
+                absolute
+                left-5
+                top-1/2
+                -translate-y-1/2
+                text-slate-500
+              "
+            >
+              🔍
+            </div>
+
+            {/* INPUT */}
+            <input
+              type="text"
+              placeholder="Search company or position..."
+              value={search}
+              onChange={(e) =>
+                setSearch(e.target.value)
+              }
+              className="
+                w-full
+                bg-slate-900/80
+                border border-slate-700/50
+                rounded-2xl
+                py-4
+                pl-14
+                pr-5
+                text-white
+                placeholder:text-slate-500
+                outline-none
+                focus:border-cyan-400
+                transition-all
+              "
+            />
+
+          </div>
+
+        </div>
+
         {/* STATS */}
         <div
           className="
@@ -415,7 +495,7 @@ export default function DashboardPage() {
           ) : (
 
             <ApplicationTable
-              applications={applications}
+              applications={filteredApplications}
               onDelete={handleDelete}
               onUpdateStatus={handleUpdateStatus}
             />
